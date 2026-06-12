@@ -77,6 +77,8 @@ export default function AdminLogisticsPage() {
   const [checkpointToConfirm, setCheckpointToConfirm] = React.useState<{id: string, currentStatus: string, name: string} | null>(null)
   const [initiateConfirmOpen, setInitiateConfirmOpen] = React.useState(false)
   const [campaignToInitiate, setCampaignToInitiate] = React.useState<Campaign | null>(null)
+  const [restoreConfirmOpen, setRestoreConfirmOpen] = React.useState(false)
+  const [deliveryForRestore, setDeliveryForRestore] = React.useState<FullDelivery | null>(null)
 
   const [editDestination, setEditDestination] = React.useState("")
   const [editAssignedPersonnel, setEditAssignedPersonnel] = React.useState("")
@@ -586,7 +588,8 @@ export default function AdminLogisticsPage() {
                                 {delivery.status === 'cancelled' && (
                                   <DropdownMenuItem onClick={(e) => {
                                     e.stopPropagation();
-                                    handleRestoreDelivery(delivery.id);
+                                    setDeliveryForRestore(delivery);
+                                    setRestoreConfirmOpen(true);
                                   }}>
                                     Restore Tracking
                                   </DropdownMenuItem>
@@ -1002,6 +1005,37 @@ export default function AdminLogisticsPage() {
                     await handleInitiateManual(campaignToInitiate.id);
                     setInitiateConfirmOpen(false);
                     setCampaignToInitiate(null);
+                  }
+                }}
+                disabled={updating}
+                className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold"
+              >
+                {updating && <Loader2 className="size-4 mr-2 animate-spin" />}
+                Confirm
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+        {/* Confirm Restore Tracking Dialog */}
+        <AlertDialog open={restoreConfirmOpen} onOpenChange={setRestoreConfirmOpen}>
+          <AlertDialogContent className="bg-card border-slate-200 dark:border-slate-800">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-xl font-bold text-slate-900 dark:text-white">
+                Restore Delivery Tracking?
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-slate-500">
+                Are you sure you want to restore logistics tracking for the campaign "<strong>{deliveryForRestore?.campaign?.title}</strong>"? This will move it back to active tracking based on its last completed checkpoint.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="gap-2">
+              <AlertDialogCancel disabled={updating}>Cancel</AlertDialogCancel>
+              <AlertDialogAction 
+                onClick={async (e) => {
+                  e.preventDefault();
+                  if (deliveryForRestore) {
+                    await handleRestoreDelivery(deliveryForRestore.id);
+                    setRestoreConfirmOpen(false);
+                    setDeliveryForRestore(null);
                   }
                 }}
                 disabled={updating}
