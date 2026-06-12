@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+        
+			<defs>
+				<clipPath id="clip-shape">
+					<path d="M 256,0 C 51.2,0 0,51.2 0,256 C 0,460.8 51.2,512 256,512 C 460.8,512 512,460.8 512,256 C 512,51.2 460.8,0 256,0 Z" />
+				</clipPath>
+			</defs>
+		
+		<defs>
+			
+						<filter id="shadow-0" x="-200%" y="-200%" width="500%" height="500%">
+							<feDropShadow
+								dx="0.4152249134948097"
+								dy="0.4152249134948097"
+								stdDeviation="0"
+								flood-color="#0a0a0a"
+								flood-opacity="0.8"
+							/>
+						</filter>
+					
+		</defs>
+        <g clip-path="url(#clip-shape)">
+            
+            <defs>
+                <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#4facfe" /><stop offset="100%" stop-color="#00f2fe" />
+                </linearGradient>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#bg-grad)" />
+        
+			
+            <g transform="translate(256, 256) scale(24.083333333333332) rotate(0) translate(-12, -12)" opacity="1" filter="url(#shadow-0)">
+					<title xmlns="" stroke="#ffffff">tabler:number-25-small</title>
+<path xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 15a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1h-3V8h4M6 8h3a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h3"/>
+				</g>
+        </g>
+    </svg>
