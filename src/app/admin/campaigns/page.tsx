@@ -82,6 +82,8 @@ export default function AdminCampaignsPage() {
   const [updatingStatusCampaign, setUpdatingStatusCampaign] = React.useState<Campaign | null>(null)
   const [selectedStatus, setSelectedStatus] = React.useState<CampaignStatus | null>(null)
   const [isUpdatingStatus, setIsUpdatingStatus] = React.useState(false)
+  const [launchConfirmOpen, setLaunchConfirmOpen] = React.useState(false)
+  const [statusUpdateConfirmOpen, setStatusUpdateConfirmOpen] = React.useState(false)
 
   // Form states
   const [title, setTitle] = React.useState("")
@@ -259,12 +261,26 @@ export default function AdminCampaignsPage() {
       errors.endDate = "End Date cannot be earlier than Start Date."
     }
 
+    if (fullDesc.length > 500) {
+      errors.fullDesc = "Full Description cannot exceed 500 characters."
+    }
+
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors)
       return
     }
 
     setFormErrors({})
+
+    if (!editingCampaign) {
+      setLaunchConfirmOpen(true)
+    } else {
+      await executeSubmit()
+    }
+  }
+
+  async function executeSubmit() {
+    if (!user) return
     setIsSubmitting(true)
 
     const campaignData: CampaignInsert = {
@@ -520,12 +536,23 @@ export default function AdminCampaignsPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Full Description</label>
+                    <div className="flex justify-between items-center">
+                      <label className="text-sm font-medium">Full Description</label>
+                      <span className={`text-xs ${fullDesc.length >= 500 ? "text-red-500 font-bold" : "text-muted-foreground"}`}>
+                        {fullDesc.length}/500
+                      </span>
+                    </div>
                     <Textarea 
                       placeholder="Detailed information about the campaign's goals and impact..." 
                       className="min-h-[100px]"
                       value={fullDesc}
-                      onChange={(e) => setFullDesc(e.target.value)}
+                      onChange={(e) => {
+                        const val = e.target.value
+                        if (val.length <= 500) {
+                          setFullDesc(val)
+                        }
+                      }}
+                      maxLength={500}
                       required
                     />
                   </div>
@@ -865,10 +892,9 @@ export default function AdminCampaignsPage() {
             <DialogFooter className="gap-1">
               <Button variant="outline" onClick={() => setStatusDialogOpen(false)} disabled={isUpdatingStatus}>Cancel</Button>
               <Button 
-                onClick={() => selectedStatus && handleQuickStatusUpdate(updatingStatusCampaign!, selectedStatus)}
+                onClick={() => setStatusUpdateConfirmOpen(true)}
                 disabled={isUpdatingStatus || !selectedStatus || selectedStatus === updatingStatusCampaign?.status}
               >
-                {isUpdatingStatus && <Loader2 className="mr-2 size-4 animate-spin" />}
                 Confirm Update
               </Button>
             </DialogFooter>
@@ -895,6 +921,58 @@ export default function AdminCampaignsPage() {
               >
                 {isDeleting && <Loader2 className="mr-2 size-4 animate-spin" />}
                 Yes, Delete Campaign
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        <AlertDialog open={launchConfirmOpen} onOpenChange={setLaunchConfirmOpen}>
+          <AlertDialogContent className="sm:max-w-[425px]">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-xl font-bold">Confirm Campaign</AlertDialogTitle>
+              <AlertDialogDescription className="text-base text-slate-500 mt-2">
+                Are you sure you want to launch this campaign? This will publish it and make it available for donations.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="mt-4 gap-2 sm:gap-0">
+              <AlertDialogCancel className="border-slate-200">Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={(e) => {
+                  e.preventDefault()
+                  setLaunchConfirmOpen(false)
+                  executeSubmit()
+                }}
+                className="bg-blue-600 text-white hover:bg-blue-700 font-medium"
+              >
+                Confirm
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        <AlertDialog open={statusUpdateConfirmOpen} onOpenChange={setStatusUpdateConfirmOpen}>
+          <AlertDialogContent className="sm:max-w-[425px]">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-xl font-bold">Are You Sure?</AlertDialogTitle>
+              <AlertDialogDescription className="text-base text-slate-500 mt-2">
+                Are you sure you want to update the status of "{updatingStatusCampaign?.title}" to "{selectedStatus}"?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="mt-4 gap-2 sm:gap-0">
+              <AlertDialogCancel disabled={isUpdatingStatus} className="border-slate-200">Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={async (e) => {
+                  e.preventDefault()
+                  if (updatingStatusCampaign && selectedStatus) {
+                    await handleQuickStatusUpdate(updatingStatusCampaign, selectedStatus)
+                    setStatusUpdateConfirmOpen(false)
+                  }
+                }}
+                className="bg-blue-600 text-white hover:bg-blue-700 font-medium"
+                disabled={isUpdatingStatus}
+              >
+                {isUpdatingStatus && <Loader2 className="mr-2 size-4 animate-spin" />}
+                Confirm
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

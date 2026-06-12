@@ -75,6 +75,8 @@ export default function AdminLogisticsPage() {
   const [deliveryToEdit, setDeliveryToEdit] = React.useState<FullDelivery | null>(null)
   const [deliveryToCancel, setDeliveryToCancel] = React.useState<FullDelivery | null>(null)
   const [checkpointToConfirm, setCheckpointToConfirm] = React.useState<{id: string, currentStatus: string, name: string} | null>(null)
+  const [initiateConfirmOpen, setInitiateConfirmOpen] = React.useState(false)
+  const [campaignToInitiate, setCampaignToInitiate] = React.useState<Campaign | null>(null)
 
   const [editDestination, setEditDestination] = React.useState("")
   const [editAssignedPersonnel, setEditAssignedPersonnel] = React.useState("")
@@ -838,7 +840,10 @@ export default function AdminLogisticsPage() {
                             <Button 
                               size="sm" 
                               className="flex-1 font-bold h-8"
-                              onClick={() => handleInitiateManual(campaign.id)}
+                              onClick={() => {
+                                setCampaignToInitiate(campaign)
+                                setInitiateConfirmOpen(true)
+                              }}
                               disabled={updating}
                             >
                               {updating ? <Loader2 className="size-3.5 animate-spin" /> : <Truck className="size-3.5 mr-2" />}
@@ -966,6 +971,38 @@ export default function AdminLogisticsPage() {
                 onClick={async (e) => {
                   e.preventDefault();
                   await handleConfirmToggleCheckpoint();
+                }}
+                disabled={updating}
+                className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold"
+              >
+                {updating && <Loader2 className="size-4 mr-2 animate-spin" />}
+                Confirm
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Confirm Initiate Tracking Dialog */}
+        <AlertDialog open={initiateConfirmOpen} onOpenChange={setInitiateConfirmOpen}>
+          <AlertDialogContent className="bg-card border-slate-200 dark:border-slate-800">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-xl font-bold text-slate-900 dark:text-white">
+                Initiate Logistics Tracking?
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-slate-500">
+                Are you sure you want to initiate logistics tracking for the campaign "<strong>{campaignToInitiate?.title}</strong>"? This will create a delivery tracking entry and start its checkpoint logs.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="gap-2">
+              <AlertDialogCancel disabled={updating}>Cancel</AlertDialogCancel>
+              <AlertDialogAction 
+                onClick={async (e) => {
+                  e.preventDefault();
+                  if (campaignToInitiate) {
+                    await handleInitiateManual(campaignToInitiate.id);
+                    setInitiateConfirmOpen(false);
+                    setCampaignToInitiate(null);
+                  }
                 }}
                 disabled={updating}
                 className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold"
