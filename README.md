@@ -1,27 +1,27 @@
-# 🎗️ Save 25: Smart Donation Management System
+# Save 25: Smart Donation Management System
 
-Ang **Save 25** ay isang modernong web application na binuo upang mapadali at maging "smart" ang pamamahala ng mga donasyon, mga kampanya (campaigns), imbentaryo ng tulong, at pamamahagi ng relief goods sa mga nangangailangan.
+Save 25 is a modern web application designed to facilitate and streamline the management of donations, campaigns, relief aid inventory, and logistics and distribution to communities in need.
 
-## 🚀 Pangunahing Features
-*   **User Control & Auth:** Ligtas na registration at login para sa mga Donors at Administrators gamit ang Supabase.
-*   **Event Campaigns:** Paglikha at pagsubaybay sa mga aktibong kampanya ng donasyon.
-*   **Payment Processing:** Integrasyon sa **PayMongo API** para sa mabilis at ligtas na online donations (GCash, Maya, Cards, etc.).
-*   **Inventory & Resource Management:** Real-time na pagsubaybay sa mga donasyong natatanggap (food, medicine, hygiene kits) sa warehouse.
-*   **Logistics & Distribution:** Pag-iskedyul at pag-manage ng distribusyon ng relief goods sa mga nasalantang lugar.
-*   **Interactive Analytics Dashboard:** Visual charts para sa donation trends at logistik gamit ang **Recharts**.
+## Core Features
+*   **User Control and Authentication:** Secure registration and login for both Donors and Administrators using Supabase.
+*   **Event Campaigns:** Creation, management, and tracking of active donation campaigns.
+*   **Payment Processing:** Integration with the PayMongo API for quick and secure online donations (including GCash, Maya, and credit cards).
+*   **Inventory and Resource Management:** Real-time tracking of received donations (food, medicine, and hygiene kits) in the warehouse.
+*   **Logistics and Distribution:** Scheduling and coordination of relief goods distribution to affected areas.
+*   **Interactive Analytics Dashboard:** Visual charts displaying donation trends and logistics status using Recharts.
 
-## 🛠️ Tech Stack
+## Tech Stack
 *   **Frontend:** React 19, TypeScript, Vite, Tailwind CSS v4, shadcn/ui
-*   **Backend & Database:** Supabase (PostgreSQL, Auth, Row-Level Security)
+*   **Backend and Database:** Supabase (PostgreSQL, Auth, Row-Level Security)
 *   **Payment Gateway:** PayMongo API
 *   **Libraries:** Recharts (Analytics), jsPDF (Reports), @dnd-kit (Drag-and-Drop)
 
-## 💻 Paano Patakbuhin sa Local
-1. I-install ang dependencies:
+## How to Run Locally
+1. Install dependencies:
    ```bash
    npm install
    ```
-2. Patakbuhin ang development server:
+2. Start the development server:
    ```bash
    npm run dev
    ```
