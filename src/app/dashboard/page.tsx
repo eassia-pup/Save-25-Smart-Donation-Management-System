@@ -46,23 +46,40 @@ export default function DashboardPage() {
 
       try {
         // Fetch Profile
-        const { data: profileData, error: profileError } = await supabase
+        let profileData: Profile | null = null
+        const { data: fetchedProfile, error: profileError } = await supabase
           .from("profiles")
           .select("*")
           .eq("id", user.id)
-          .single()
+          .maybeSingle()
 
         if (profileError) {
-          console.error("Profile fetch error:", profileError)
-          throw new Error("Could not load your profile. Please try refreshing.")
+          console.warn("Profile fetch error, using fallback profile:", profileError)
         }
 
-        if (!profileData) {
-          console.error("No profile found for user:", user.id)
-          throw new Error("Profile not found. Please try logging out and back in.")
+        if (fetchedProfile) {
+          profileData = fetchedProfile as Profile
+        } else {
+          profileData = {
+            id: user.id,
+            email: user.email || "",
+            full_name: user.user_metadata?.full_name || user.email?.split("@")[0] || "Donor",
+            avatar_url: user.user_metadata?.avatar_url || null,
+            role: "donor",
+            phone: null,
+            address_unit: null,
+            address_line1: null,
+            address_line2: null,
+            address_city: null,
+            address_state: null,
+            address_zip: null,
+            address_country: null,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          }
         }
 
-        setProfile(profileData as Profile)
+        setProfile(profileData)
 
         // Fetch Stats
         if (profileData.role === "donor") {
@@ -163,11 +180,11 @@ export default function DashboardPage() {
   }, [user])
 
   const handleGenerateDonorInsights = async () => {
-    if (!profile) return
+    if (!user) return
     setInsightLoading(true)
     try {
       const insight = await generateDonorInsights({
-        donorName: profile.full_name || user?.email?.split("@")[0] || "Donor",
+        donorName: profile?.full_name || user?.user_metadata?.full_name || user?.email?.split("@")[0] || "Donor",
         totalCash: stats.totalDonated,
         totalInKind: stats.totalInKind,
         donations: donorDonations,
@@ -335,7 +352,7 @@ export default function DashboardPage() {
 
             {/* AI Insights Card */}
             <Card className="relative overflow-hidden border-2 border-primary/20 shadow-xl shadow-primary/5 bg-gradient-to-br from-background to-primary/5">
-              <div className="absolute top-0 right-0 p-4 opacity-10">
+              <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
                 <Sparkles className="size-32 text-primary" />
               </div>
               <CardContent className="p-8 space-y-6">
